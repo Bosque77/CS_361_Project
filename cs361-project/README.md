@@ -1,36 +1,131 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ratings Average Microservice
 
-## Getting Started
+A microservice that calculates the average of numeric ratings. This service provides a simple REST API endpoint that accepts an array of numbers and returns their arithmetic mean.
 
-First, run the development server:
+## API Documentation
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Base URL
+```
+http://localhost:3000/api
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Requesting Data
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+To request the average of an array of numbers, make a POST request to the `/average` endpoint with a JSON body containing an array of numbers under the `ratings` key.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+#### Example Request
 
-## Learn More
+```javascript
+// JavaScript/TypeScript
+const response = await fetch('http://localhost:3000/api/average', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    ratings: [4, 5, 3, 5]  // Array of numbers to average
+  })
+});
 
-To learn more about Next.js, take a look at the following resources:
+const data = await response.json();
+console.log(data);
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+#### Python Example
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```python
+import requests
 
-## Deploy on Vercel
+response = requests.post(
+    'http://localhost:3000/api/average',
+    json={
+        'ratings': [4, 5, 3, 5]  # Array of numbers to average
+    }
+)
+data = response.json()
+print(data)
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Receiving Data
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The service will respond with a JSON object containing the calculated average or an error message.
+
+#### Success Response (200 OK)
+
+```json
+{
+  "average": 4.25
+}
+```
+
+#### Error Response (400 Bad Request)
+
+When the input is invalid (non-numeric values, wrong format, etc.):
+
+```json
+{
+  "error": "All ratings must be numbers"
+}
+```
+
+#### Empty Array Response (200 OK)
+
+When an empty array is provided:
+
+```json
+{
+  "error": "No ratings provided",
+  "average": null
+}
+```
+
+## Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+    Client->>Server: POST /api/average
+    Note right of Server: 1. Validate input
+    alt Invalid Input
+        Server-->>Client: 400 Bad Request
+    else Empty Array
+        Server-->>Client: 200 OK (with empty array message)
+    else Valid Input
+        Server->>Server: Calculate average
+        Server-->>Client: 200 OK (with average)
+    end
+```
+
+## Error Handling
+
+- **400 Bad Request**: Returned when the input is not a valid array of numbers
+- **500 Internal Server Error**: Returned for unexpected server errors
+- **405 Method Not Allowed**: Returned for non-POST requests
+
+## Rate Limiting
+
+No rate limiting is currently implemented. Consider implementing rate limiting in production environments.
+
+## Local Development
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+4. The API will be available at `http://localhost:3000/api/average`
+
+## Dependencies
+
+- Node.js 18+
+- Next.js 13+
+- TypeScript
+
+## License
+
+MIT
