@@ -6,7 +6,7 @@ A microservice that calculates the average of numeric ratings. This service prov
 
 ### Base URL
 ```
-http://localhost:3000/api
+https://cs-361-project-three.vercel.app/api
 ```
 
 ### Requesting Data
@@ -17,7 +17,7 @@ To request the average of an array of numbers, make a POST request to the `/aver
 
 ```javascript
 // JavaScript/TypeScript
-const response = await fetch('http://localhost:3000/api/average', {
+const response = await fetch('https://cs-361-project-three.vercel.app/api/average', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ console.log(data);
 import requests
 
 response = requests.post(
-    'http://localhost:3000/api/average',
+    'https://cs-361-project-three.vercel.app/api/average',
     json={
         'ratings': [4, 5, 3, 5]  # Array of numbers to average
     }
@@ -118,7 +118,7 @@ No rate limiting is currently implemented. Consider implementing rate limiting i
    ```bash
    npm run dev
    ```
-4. The API will be available at `http://localhost:3000/api/average`
+4. The API will be available at `https://cs-361-project-three.vercel.app/api/average`
 
 ## Dependencies
 
