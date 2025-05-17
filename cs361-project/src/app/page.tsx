@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from "next/image";
 
 export default function Home() {
   const [ratings, setRatings] = useState<string>('4, 5, 3, 5');
