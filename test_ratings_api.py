@@ -1,5 +1,6 @@
 import requests
 import json
+import pytest
 
 def test_ratings_api():
     # API endpoint
@@ -71,7 +72,58 @@ def test_ratings_api():
         except Exception as e:
             print(f"❌ Error making request: {str(e)}")
 
+def test_cors_headers():
+    """Test that CORS headers are properly set in the API responses."""
+    url = "https://cs-361-project-three.vercel.app/api/average"
+    
+    # Test OPTIONS request
+    print("\n" + "="*50)
+    print("Testing CORS headers with OPTIONS request")
+    response = requests.options(url)
+    
+    # Debug: Print all response headers
+    print("\nResponse Headers:")
+    for header, value in response.headers.items():
+        print(f"{header}: {value}")
+    
+    # Check status code
+    assert response.status_code == 204, f"Expected status 204, got {response.status_code}"
+    
+    # Check CORS headers (case-insensitive check)
+    headers_lower = {k.lower(): v for k, v in response.headers.items()}
+    assert 'access-control-allow-origin' in headers_lower, \
+        f"Missing CORS header: Access-Control-Allow-Origin. Headers present: {list(response.headers.keys())}"
+    assert headers_lower['access-control-allow-origin'] == '*', \
+        f"Incorrect CORS origin. Got: {headers_lower.get('access-control-allow-origin')}"
+    
+    # Test POST request
+    print("\n" + "="*50)
+    print("Testing CORS headers with POST request")
+    response = requests.post(
+        url,
+        json={"ratings": [1, 2, 3, 4, 5]},
+        headers={"Content-Type": "application/json"}
+    )
+    
+    # Debug: Print all response headers
+    print("\nResponse Headers:")
+    for header, value in response.headers.items():
+        print(f"{header}: {value}")
+    
+    # Check status code
+    assert response.status_code == 200, f"Expected status 200, got {response.status_code}"
+    
+    # Check CORS headers (case-insensitive check)
+    headers_lower = {k.lower(): v for k, v in response.headers.items()}
+    assert 'access-control-allow-origin' in headers_lower, \
+        f"Missing CORS header: Access-Control-Allow-Origin. Headers present: {list(response.headers.keys())}"
+    assert headers_lower['access-control-allow-origin'] == '*', \
+        f"Incorrect CORS origin. Got: {headers_lower.get('access-control-allow-origin')}"
+    
+    print("CORS headers test passed!")
+
 if __name__ == "__main__":
     print("Starting Ratings API Tests...")
     test_ratings_api()
+    test_cors_headers()
     print("\nAll tests completed!")
